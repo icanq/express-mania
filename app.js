@@ -3,7 +3,12 @@
 const express = require('express')
 
 // buat baca db boongan kita perlu pake fs;
-const fs = require('fs')
+const fs = require('fs');
+
+const pathToPublicFolder = __dirname + 'public'
+
+// C:\
+// user/mnt/
 
 // kalau nanti kita bakal baca dari database beneran, kita bakal install dulu database drivernya, contohnya mysql, mongodb, postgresql
 // npm i mysql atau npm i pg atau npm i mongodb
@@ -12,7 +17,8 @@ const fs = require('fs')
 const app = express();
 const PORT = 3000;
 
-app.use(express.static('public'))
+// express.static() adalah function middleware yang dibuat oleh express untuk membantu kita dalam memudahkan serving static files
+app.use(express.static(pathToPublicFolder))
 
 /**
  * const server = http.createServer((req, res) => {
@@ -53,6 +59,33 @@ app.get('/users', (req, res) => {
 
   // kalau pake ORM
   // const users = db.findAll('users')
+})
+
+// get by id
+app.get('/users/:id', (req, res) => {
+  console.log(req.params)
+  // destructuring an object
+  const { id } = req.params
+
+  // tampung ke dalam variabel
+  // const id = req.params.id
+  // const name = req.params.name
+
+
+  // kita akan mengambil user pada database dengan user id = user id yang dikirimkan oleh user melalui request params
+  fs.readFile('./db/fake_database.json', 'utf-8', (error, data) => {
+    if (error) res.send('gagal dalam pembacaan database')
+    const users = JSON.parse(data)
+    console.log(users)
+    // filter data dari database, dan kita cari user dengan id sesuai dengan id yang dilempar melalui req.params
+    const user = users.find(user => user.id === Number(id))
+    // error handling apabila user tidak ada pada database
+    if (!user) res.send("User tidak ditemukan")
+
+    // melempar data user melalui response
+    res.send(user)
+  });
+
 })
 
 app.listen(PORT, () => {
