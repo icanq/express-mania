@@ -1,0 +1,14 @@
+[
+  {
+    "nama": "Kettler Barbel 20KG",
+    "harga": 200000,
+    "currency": "IDR",
+    "created_by": 1 
+  },
+  {
+    "nama": "iPhone 15 Pro",
+    "harga": 16000000,
+    "currency": "IDR",
+    "created_by": 1
+  }
+]
