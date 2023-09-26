@@ -49,4 +49,32 @@ userRoutes.get('/users/:id', (req, res) => {
 
 })
 
+userRoutes.post('/users', (req, res) => {
+  // destructure value from an object
+  const { name, age } = req.body
+
+  // kita akan menambahkan user baru ke database yang didapatkan dari request body
+  
+  // kalau databasenya json, kita perlu baca dulu isi dari database
+  fs.readFile('./db/users.json', (error, data) => {
+    // error handling saat tidak bisa membaca users.json
+    if (error) res.send("Terjadi kesalahan saat membaca database")
+
+    // kita akan mengubah data yang didapat dari database menjadi array of object
+    const user = JSON.parse(data) 
+    // array of user
+    const newUser = {
+      name,
+      age
+    }
+
+    user.push(newUser)
+
+    fs.writeFile('./db/users.json', JSON.stringify(user, null, 2), (error) => {
+      if (error) res.send("Terjadi kesalahan saat menulis ke database")
+      res.send("User berhasil ditambahkan")
+    })
+  })
+})
+
 module.exports = { userRoutes }

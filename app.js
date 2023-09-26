@@ -7,7 +7,11 @@ const fs = require('fs');
 
 const { userRoutes } = require('./routes/userRoutes')
 const { productRoutes } = require('./routes/productRoutes')
-const pathToPublicFolder = __dirname + 'public'
+const pathToPublicFolder = __dirname + '/public'
+const pathToCssFolder = __dirname + '/public/css'
+console.log(__dirname)
+console.log(pathToPublicFolder)
+console.log(pathToCssFolder)
 
 // C:\
 // user/mnt/
@@ -21,6 +25,10 @@ const PORT = 3000;
 
 // express.static() adalah function middleware yang dibuat oleh express untuk membantu kita dalam memudahkan serving static files
 app.use(express.static(pathToPublicFolder))
+// fungsi dari `express.json()` adalah untuk parse data json yang dikirimkan dari request body
+app.use(express.json())
+// untuk parse data yang dikirim melalui req.body dalam bentuk Content-Type nya application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }))
 
 /**
  * const server = http.createServer((req, res) => {
