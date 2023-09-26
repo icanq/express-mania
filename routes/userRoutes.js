@@ -139,5 +139,31 @@ userRoutes.put('/users/:id', (req, res) => {
   })
 });
 
+// delete user
+userRoutes.delete('/users/:id', (req, res) => {
+  const { id } = req.params;
+
+  // kita akan menghapus user yang ada pada database
+  fs.readFile('./db/users.json', 'utf-8', (error, data) => {
+    if (error) res.send('gagal dalam pembacaan database')
+    const users = JSON.parse(data)
+
+    // cari user di db
+    const filteredUser = users.filter(user => user.id !== Number(id))
+
+    if (!filteredUser) res.status(404).send("User tidak ditemukan")
+
+    // simpan perubahan ke db
+    // saat menggunakan database, logika ini akan berubah
+    fs.writeFile('./db/users.json', JSON.stringify(filteredUser, '', 2), (error) => {
+      if (error) res.send("Gagal menghapus user")
+      res.status(200).send({
+        message: "Success menghapus user",
+        data: filteredUser
+      })
+    });
+  });
+})
+
 
 module.exports = { userRoutes }
