@@ -9,7 +9,7 @@ userRoutes.get('/users', (req, res) => {
   fs.readFile('./db/users.json', 'utf-8', (error, data) => {
     if (error) res.send("Terjadi kesalahan pada pembacaan file")
     // if (error) throw err 
-    res.send(JSON.parse(data))
+    res.status(200).send(JSON.parse(data))
   })
 
   // nanti kalau pake database beneran kita perlu melakukan query ke database, misalnya kalau pake mysql atau PostgreSQL itu `SELECT * FROM users`
@@ -44,9 +44,56 @@ userRoutes.get('/users/:id', (req, res) => {
     if (!user) res.send("User tidak ditemukan")
 
     // melempar data user melalui response
-    res.send(user)
+    res.status(200).send(user)
   });
-
 })
+
+// create new user
+userRoutes.post('/users', (req, res) => {
+  console.log(req.body)
+  // destructuring an object
+  const { name, age, cars } = req.body
+
+  // validasi untuk mengecek apakah data yang dikirimkan oleh user sudah lengkap atau belum
+  if (!name || !age || !cars) res.send("Data yang dikirimkan tidak lengkap")
+
+  // lalu kita akan menambahkan user baru ke dalam database
+  fs.readFile('./db/users.json', 'utf-8', (error, data) => {
+    if (error) res.send('gagal dalam pembacaan database')
+    const users = JSON.parse(data)
+    // kita akan membuat user baru dengan id yang unik
+    // apabila nanti sudah menggunakan database, kita tidak perlu melakukan penambahan id seperti ini secara manual, nanti bisa otomatis
+    const newUser = {
+      id: users.length + 1,
+      name,
+      age,
+      cars
+    }
+
+    // kita push user baru ke dalam database. Ketika sudah menggunakan database, kita tidak perlu melakukan push seperti ini, nanti bisa menggunakan query INSERT INTO users VALUES (name, age, cars)
+
+    // contoh request body pada postman dengan mode RAW -> JSON
+    // {
+    //   "name": "Budi",
+    //   "age": 24,
+    //   "cars": [
+    //     {
+    //       "name": "Toyota"
+    //       "models": [ "Prius" ]
+    //     }
+    //   ]
+    // }
+    users.push(newUser)
+
+    fs.writeFile('./db/users.json', JSON.stringify(users, '', 2), (error) => {
+      if (error) res.send("Gagal menambahkan user baru")
+      res.status(201).send({
+        message: "Success menambahkan user",
+        data: newUser
+      })
+    })
+  })
+})
+
 
 module.exports = { userRoutes }

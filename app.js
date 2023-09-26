@@ -22,6 +22,11 @@ const PORT = 3000;
 // express.static() adalah function middleware yang dibuat oleh express untuk membantu kita dalam memudahkan serving static files
 app.use(express.static(pathToPublicFolder))
 
+// untuk bisa mengakses data json yang dikirim melalui body kita perlu menggunakan middleware yang dibuat oleh express bernama express.json() untuk parse data json dari body.
+// untuk parse data dari request x-www-form-urlencoded kita perlu menggunakan middleware express.urlencoded({ extended: true }) dimana extended true berarti kita mengizinkan express untuk mengirimkan data yang berbentuk object atau array
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 /**
  * const server = http.createServer((req, res) => {
  *   if (req.url === '/') {

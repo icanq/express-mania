@@ -40,5 +40,18 @@
         ]
       }
     ]
+  },
+  {
+    "id": 3,
+    "name": "Budi",
+    "age": 24,
+    "cars": [
+      {
+        "name": "Toyota",
+        "models": [
+        "Prius"
+        ]
+      }
+    ]
   }
 ]
