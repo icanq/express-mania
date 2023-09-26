@@ -9,7 +9,10 @@ userRoutes.get('/users', (req, res) => {
   fs.readFile('./db/users.json', 'utf-8', (error, data) => {
     if (error) res.send("Terjadi kesalahan pada pembacaan file")
     // if (error) throw err 
-    res.status(200).send(JSON.parse(data))
+    res.status(200).send({
+      message: "Sukses mengambil user",
+      data: JSON.parse(data)
+    })
   })
 
   // nanti kalau pake database beneran kita perlu melakukan query ke database, misalnya kalau pake mysql atau PostgreSQL itu `SELECT * FROM users`
@@ -44,7 +47,10 @@ userRoutes.get('/users/:id', (req, res) => {
     if (!user) res.send("User tidak ditemukan")
 
     // melempar data user melalui response
-    res.status(200).send(user)
+    res.status(200).send({
+      message: "Success mendapatkan user",
+      data: user
+    })
   });
 })
 
@@ -94,6 +100,44 @@ userRoutes.post('/users', (req, res) => {
     })
   })
 })
+
+// update user
+// untuk membuat update user, kita perlu mengirimkan data user yang sudah diupdate melalui request body dan kita perlu tau user mana yang akan di update melalui req.params
+
+userRoutes.put('/users/:id', (req, res) => {
+  const { id } = req.params
+  const { name, age, cars } = req.body
+
+  // kita akan mengupdate data user yang ada pada database
+  fs.readFile('./db/users.json', 'utf-8', (error, data) => {
+    if (error) res.send('gagal dalam pembacaan database')
+    const users = JSON.parse(data)
+
+    // cari usernya dulu
+    // logika ini nanti akan berubah sesuai dengan database yang digunakan
+    const user = users.find(user => user.id === Number(id))
+
+    // error handling apabila user tidak ditemukan
+    if (!user) res.send("User tidak ditemukan")
+
+    // kita akan mengupdate data user yang ada pada database
+    user.name = name
+    user.age = age
+    user.cars = cars
+
+    // kita akan mengupdate data user yang ada pada database
+    // logika ini nanti akan berubah sesuai dengan database yang digunakan
+    users[user.id - 1] = user
+
+    fs.writeFile('./db/users.json', JSON.stringify(users, '', 2), (error) => {
+      if (error) res.send("Gagal mengupdate user")
+      res.status(200).send({
+        message: "Success mengupdate user",
+        data: user
+      })
+    });
+  })
+});
 
 
 module.exports = { userRoutes }
